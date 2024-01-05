@@ -64,9 +64,9 @@ Most of the time, when such an operation happens it causes bindings to change. Z
 ### How change detection works
 
 At application bootstrap, Angular creates a component tree. Each component in the tree has an associated view containing its particular template bindings.
-Because Angular only knows from Zone.js that an event fired and changes might have occurred by default it has to initiate a top-down **dirty check** of the **whole** component/view tree There fore an async event triggered in any component of the tree will mark all the components in the tree for checking.
+Because Angular only knows from Zone.js that an event was triggered and not where the changes occurred it has to initiate a top-down **dirty check** of the **whole** component/view tree. There fore an async event triggered in any component of the tree will mark all the components in the tree for checking.
 
-When checking each component for changes Angular simply compares the current value of the component template bindings to the previously stored value. If a change has occurred then angular rerenders it.
+When checking each component for changes Angular simply compares the current value of the component template bindings to the previously stored value. If a change has occurred then Angular will mark the component as **dirty**.
 
 ### Change detection deep dive (Change detector ref and Application ref)
 
@@ -170,7 +170,7 @@ class MyComponent {
 
 <span style="background-color: coral;font-weight:bold;color:#2d2d2d; padding: 5px; border-radius: 3px; display:inline-block; margin: 5px 0 0 5px;">#AdvancedZone</span>
 
-Even if Zone.js has been moved to the Angular monorepo we can still install it and use it in non angular js projects
+Even if Zone.js has been moved to the Angular monorepo we can still install it and use it in non angular javascript projects.
 `npm install zone.js`
 
 What can Zone.js do besides notify angular about async operations?
@@ -216,7 +216,7 @@ window.setTimeout = function (callback, delay) {
 ```
 
 **Async life cycle hooks** <br>
-_With those hooks, Zone can monitor and intercept all lifecycles of async operations_
+_With these hooks, Zone can monitor and intercept all lifecycles of async operations_
 
 - `onScheduleTask`, this callback will be called before the async operation is scheduled, which means when the async operation is about to be sent to the browser(or NodeJS) to be scheduled to run later.
 - `onInvokeTask`, this callback will be called before the async callback is invoked.
@@ -249,11 +249,11 @@ Zone.js interacts with the JavaScript event loop's macrotask queue in several wa
 
 It wraps all async operations in a `Task` data structure, which holds all the information of the operation.
 
-Before calling the original function (like `setTimeout`), Zone.js calls the `onScheduleTask` callback. After scheduling a new task, it increases the `macroTaskCount` inside the zone and checks if `macroTaskCount` was zero before this new task. If it was, it is called `zone.onHasTask({macroTask: true})`
+Before calling the original function (like `setTimeout`), Zone.js calls the `onScheduleTask` callback. After scheduling a new task, it increases the `macroTaskCount` inside the zone and checks if `macroTaskCount` was zero before this new task. If it was, it is called `zone.onHasTask({macroTask: true})`.
 
-After invoking a task, which means the asynchronous operation has finished, Zone.js decreases the `macroTaskCount` inside the zone. It also checks if `macroTaskCount` is zero after this task. If it is, it is called `zone.onHasTask({macroTask: false})`. This indicates that there are no more macrotasks in the queue
+After invoking a task, which means the asynchronous operation has finished, Zone.js decreases the `macroTaskCount` inside the zone. It also checks if `macroTaskCount` is zero after this task. If it is, it is called `zone.onHasTask({macroTask: false})`. This indicates that there are no more macrotasks in the queue.
 
-Zone.js also wraps the callback of asynchronous operations. Before calling the actual callback, it calls the `onInvokeTask` callback. This is done to allow Zone.js to intercept the execution of the callback
+Zone.js also wraps the callback of asynchronous operations. Before calling the actual callback, it calls the `onInvokeTask` callback. This is done to allow Zone.js to intercept the execution of the callback.
 
 **Macro vs Micro tasks** <br>
 
@@ -274,13 +274,10 @@ rules. A child zone is expected to either:
 - Delegate the interception to a parent zone, and optionally add before and after wrapCallback hooks.
 - Process the request itself without delegation.
 
-Composability allows zones to keep their concerns clean. For example, a topmost zone may choose
-to handle error handling, while child zones may choose to do user action tracking.
+Composability allows zones to keep their concerns clean. For example, a topmost zone may choose to handle error handling, while child zones may choose to do user action tracking.
 
 Root Zone<br>
-At the start the browser will run in a special root zone, which is configured to behave exactly
-like the platform, making any existing code that is not zone-aware behave as expected. All
-zones are children of the root zone.
+At the start the browser will run in a special root zone, which is configured to behave exactly like the platform, making any existing code that is not zone-aware behave as expected. All zones are children of the root zone.
 
 **Furhter Zone.js reading**<br>
 
@@ -298,7 +295,7 @@ The NgZone constructor creates internally a child zone using the `Zone.fork()` m
 NgZone inherits certain characteristics from the global zone, such as the zone's execution context and behavior.
 Any asynchronous operations (such as promises, timers, and events) initiated within the NgZone will be executed within the context of the NgZone thus triggering a change detection cycle.
 
-After all micro tasks have finished executing Zone.js calls the `onHasTask({microTask: false})` callback, this, in turn, triggers the internal Angular `onMicrotaskEmpty` `EventEmitter` and inside the `NgZoneChangeDetectionScheduler` class we can see that `this.applicationRef.tick()` is called triggering a global change detection cycle.
+After all micro tasks have finished executing Zone.js calls the `onHasTask({microTask: false})` callback, this, in turn, triggers the internal Angular `onMicrotaskEmpty` `EventEmitter` and inside the `NgZoneChangeDetectionScheduler` class where we can see that `this.applicationRef.tick()` is called starting a global change detection cycle.
 
 ```typescript
 export class NgZoneChangeDetectionScheduler {
@@ -349,14 +346,14 @@ export class TimerComponent implements OnInit {
 Our NgZone context will look something like this<br><br>
 ![](img/setIntervalNgZone.png)
 
-As we can see this is very problematic as after every setInterval Zone.JS signals Angular to run a change detection cycle. This can cause an incredible performance impact especially if the app doesn't use `ChangeDetectionStrategy.OnPush`, running this type of code inside NgZone can cause a lot of to-solve bugs and odd behaviors especially if 3rd party libraries are being used in the project.
+As we can see this is very problematic as after every setInterval Zone.JS signals Angular to run a change detection cycle. This can cause an incredible performance impact especially if the app doesn't use `ChangeDetectionStrategy.OnPush`, running this type of code inside NgZone can cause a lot of hard to-solve bugs and odd behaviors especially if 3rd party libraries are being used in the project.
 
-It is not common to use setInterval or setTimeOut in our Angular apps but we might want to use 3rd party 3D libraries such as theejs or webGL. This libs use a lot the `requestAnimationFrame()` microtask. To avoid unwanted change detection cycles angular provides us access to `NgZone`. Using it we can run async heavy code "outside angular" in the parent\global Zone form which NgZone was forked.
+It is not common to use setInterval or `setTimeOut` in our Angular apps but we might want to use 3rd party 3D libraries such as [threejs](https://threejs.org/) or webGL. This libs use a lot the `requestAnimationFrame()` microtask. To avoid unwanted change detection cycles angular provides us access to `NgZone`. Using it we can run async heavy code "outside angular" in the parent\global Zone form which NgZone was forked.
 
 Therefore our NgZone context will look like this now. <br><br>
 ![](img/runOutsideAngular.png)
 
-We can access the NgZone service in a component by injecting it through the component's constructor:
+We can access the NgZone service in a component by injecting it via the component's constructor:
 
 ```typescript
 import { Component, NgZone } from "@angular/core";
@@ -382,7 +379,7 @@ export class ExampleComponent {
 ### ZoneJs Performance optimization(Event coalesing, Zonless app)
 
 **Event Coalescing** <br>
-If we want to further improve the performance of your Angular app we can use something called _Even Coalescing_.
+If we want to further improve the performance of your Angular app we can use a feature of Zone.js called _Even Coalescing_.
 Via event coalescing, Zone.js offers us a way in which we can group or coalesce multiple asynchronous events into a single task.
 
 When multiple asynchronous events happen in close proximity, such as several asynchronous tasks or callbacks occurring almost simultaneously, Zone.js can coalesce them into a single task. This helps in optimizing performance and reducing unnecessary overhead. Rather than triggering separate change detection cycles for each event, coalescing allows Angular to process them together in a more efficient manner.
@@ -403,7 +400,7 @@ platformBrowserDynamic()
 Event coalescing is a powerful tool for improving performance in Angular applications, but it should be used judiciously because in some cases it can lead to unexpected behavior, so always test thoroughly when enabling this feature.
 
 **Disabling Zone.js patches** <br>
-Another more surgical way in which you can optimize Zone.js performance is by disabling its monkey-patching on specific web APIs. This can be achieved by using `__Zone_disable_*` flags before importing Zone.js, the best place for these flags is the `polyfills.ts` file.
+Another more surgical way in which you can optimize Zone.js performance is by disabling its monkey-patching on specific web APIs. This can be achieved by using `__Zone_disable_*` flags before importing Zone.js, the best place for these flags is in the `polyfills.ts` file.
 Here is an example of disabling the `setTimeout` and `requestAnimationFrame`:
 
 ```typescript
@@ -425,9 +422,9 @@ Due to the nature of Zone.js monkey-patching EVERY web API, this creates a lot o
 Possible side effects of running a zoneless Angular app:
 
 - Loss of Automatic Change Detection (obviously): Disabling zones may require manual triggering of change detection, impacting data binding and updates.
-- Router navigation events not triggering `ngOnInit()` on components
+- Router navigation events not triggering `ngOnInit()` on components.
 - Limited Integration with External Libraries: Many third-party libraries and frameworks integrate with Angular through zones. Disabling zones may lead to compatibility issues or loss of certain features in these libraries. -[CHECK IF TRUE] Reduced Integration with Angular Features: Certain Angular features, like `@HostListener` and `@ViewChild`, rely on zones. Disabling zones may limit or break the functionality of these features.
-- `markForChanges()` does not work
+- `markForChanges()` does not work.
 
 If you choose to go this route here's how to do it:
 Firstly, we cannot bootstrap the application without providing Zone.js. We can bypass this by using the non-public provider (theta) `NoopNgZone`. Here is an example of bootstrapping a zoneless app with a component instead of a module.
@@ -476,20 +473,20 @@ Since the `async` pipe will not work (because it calls `markForChanges()`) we wi
 
 ### Angular v17 change detection with Signals
 
-Angular Signals is a new feature introduced in Angular v16 that enhances Angular's reactive programming capabilities and change detection features. They represent a value plus a change notification, providing a way for the code to inform the templates (and other code) that the data has changed.
+Angular Signals are a new feature introduced in Angular v16 that enhances Angular's reactive programming capabilities and change detection features. Signals are a reactive primitive that provide a way for the code to inform the templates (and other code) that the data has changed.
 
 When a signal's value changes, Angular's change detection automatically updates any view that reads the signal.
 The Angular team refers to this as the golden rule of signal components: "Change detection for a component will be scheduled when and only when a signal read in the template notifies Angular that it has changed"
 
 By using signals, Angular can provide finer control over change detection, potentially improving performance.
 
-At the heart of this new way of change detection are the new single-based components. These components receive their input as signals.
+At the heart of this new of change detection method are the new signal-based components. These components receive their input as signals.
 
 **Singal-based components vs on-push components**
-You might ask why to use signal-based components when you can just set the `changeDetectionStragey` to on push thus making normal components behave like signal-based ones in the sense that both will trigger change detection only when the inputs change. But the key difference is that when a normal component inputs change Angulars change detection is still triggered by Zone.js and has to run (depending on changeDetectionStragey) on other not-affected components as well. On the other hand, signal-based components notify Angular's change detection mechanism via signals to run only on the affected component thus enabling surgical and zoneless change detection.
+You might ask why to use signal-based components when you can just set the `changeDetectionStragey` to on push thus making normal components behave like signal-based in the sense that both will trigger change detection only when the inputs change. But the key difference is that when a normal component inputs change Angulars change detection is still triggered by Zone.js and has to run (depending on changeDetectionStragey) on other not-affected components as well. On the other hand, signal-based components notify Angular's change detection mechanism via signals to run only on the affected component thus enabling surgical and zoneless change detection.
 
 When an OnPush component uses a signal's value in its template, Angular will track the signal as a dependency of that component. When that signal is updated, Angular automatically marks the component to ensure it gets updated the next time change detection runs.
 
-The Angular team is hopeful once all the remaining RFC regarding signals are closed and implemented that we can fully implement angular projects with Zone.js as an optional.
+The Angular team is hopeful once all the remaining RFC regarding signals are closed and implemented that developers will be able to fully implement angular projects with Zone.js as an optional.
 
 It's important to note that signal-based components are still in the developer preview phase in Angular v17 and may not be suitable for production use.
