@@ -483,9 +483,9 @@ By using signals, Angular can provide finer control over change detection, poten
 At the heart of this new of change detection method are the new signal-based components. These components receive their input as signals.
 
 **Singal-based components vs on-push components** <br>
-You might ask why to use signal-based components when you can just set the `changeDetectionStragey` to on push, thus making normal components behave like signal-based ones. That is, both will trigger change detection only when the inputs change. BBut the key difference is that when a normal component inputs change, Angulars change detection is still triggered by `Zone.js` and has to run (depending on changeDetectionStragey) on other not-affected components as well.On the other hand, signal-based components notify Angular's change detection mechanism via signals to run only on the affected component thus enabling surgical and zoneless change detection.
+You might ask why to use signal-based components when you can just set the `changeDetectionStragey` to `onPush`, thus making normal components behave like signal-based ones. That is, both will trigger change detection only when the inputs change. But the key difference is that when a normal component inputs change, Angulars change detection is still triggered by `Zone.js` and has to run (depending on `changeDetectionStragey`) on other not-affected components as well. On the other hand, signal-based components notify Angular's change detection mechanism via signals to run only on the affected component thus enabling surgical and zoneless change detection.
 
-When an OnPush component uses a signal's value in its template, Angular will track the signal as a dependency of that component. When that signal is updated, Angular automatically marks the component to ensure it gets updated the next time change detection runs.
+When an on-push component uses a signal's value in its template, Angular will track the signal as a dependency of that component. When that signal is updated, Angular automatically marks the component as dirty to ensure it gets updated the next time change detection runs.
 
 The Angular team is hopeful, once all the remaining RFC regarding signals are closed and implemented, that developers will be able to fully implement Angular projects with `Zone.js` as an optional.
 
