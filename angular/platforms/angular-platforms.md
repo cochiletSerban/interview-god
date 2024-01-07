@@ -475,7 +475,7 @@ Understanding the `Renderer` can empower us to implement a custom one, that will
 
 ### Further Readings
 
-- [Creating a custom webGL Renderer]('https://www.youtube.com/watch?v=fVBWeAMqaDQ')
+- [Creating a custom webGL Renderer](https://www.youtube.com/watch?v=fVBWeAMqaDQ)
 - [Rendering an Angular app in a Linux terminal](https://medium.com/angular-in-depth/angular-platforms-in-depth-part-3-rendering-angular-applications-in-terminal-117e4da9c0cc)
 - [Angular platforms in depth 1](https://medium.com/angular-in-depth/angular-platforms-in-depth-part-1-what-are-angular-platforms-9919d45f3054)
 - [Angular platforms in depth 2](https://medium.com/angular-in-depth/angular-platforms-in-depth-part-2-application-bootstrap-process-8be461b4667e)
