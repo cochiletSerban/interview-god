@@ -1,4 +1,4 @@
-<h1 align="center">Angular platforms</h1>
+<h1 align="center">Angular Routing</h1>
 
 <img src="img/title.png" style="display:block; margin:auto;" width="500px">
 
