@@ -4,4 +4,4 @@
 
 [2 - Angular platforms with Renderer](/angular/platforms/angular-platforms.md)
 
-[WIP 3 - Advanced Angular routing](/angular/advanced-routing/advanced-routing.md)
+[3 - Advanced Angular routing](/angular/advanced-routing/advanced-routing.md)

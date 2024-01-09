@@ -157,11 +157,11 @@ The `Renderer` is an `Injectable` provided by the platform at application boostr
 
 `Renderer` provides an API for UI manipulations. It acts as an abstraction layer over direct DOM manipulations, allowing developers to write code that can be executed in environments that may not have access to the DOM, such as on the server, in a web worker, or in a native mobile or desktop environment.
 
-Since Angular 9 `Renderer` was updated to reduce the risk of XSS attacks because it does not use the `innerHTML` property, which is known to be a potential security vulnerability. Instead, it uses safer alternatives like `textContent` or `setAttribute`.
+With the release of Angular V9 `Renderer` was updated to reduce the risk of XSS attacks because it does not use the `innerHTML` property, which is known to be a potential security vulnerability. Instead, it uses safer alternatives like `textContent` or `setAttribute`.
 
 ## Renderer deep dive
 
-To understand better what the Angular `Renderer` does behind the scenes lets take a look at what methods it implements:
+To understand better what the Angular `Renderer` does behind the scenes let's take a look at what methods it implements:
 
 ```typescript
 export interface Renderer {
