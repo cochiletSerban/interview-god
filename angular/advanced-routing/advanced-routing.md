@@ -53,7 +53,7 @@ The main difference between on demand loading and module preloading is that in t
 
 - Faster Subsequent Navigation: By pre-loading modules in the background, subsequent navigations to different parts of the application are faster because the required modules are already available in the browser's cache.
 
-- Improved User Experience: users experience faster transitions between views and fewer delays when navigating through different sections of the application. This leads to a more responsive and seamless user experience.
+- Improved User Experience: Users experience faster transitions between views and fewer delays when navigating through different sections of the application. This leads to a more responsive and seamless user experience.
 
 - Granular Control Over Pre-loading: Angular provides flexibility in configuring which modules should be pre-loaded and which should be loaded on-demand. Developers can define specific pre-loading strategies based on the application's requirements, ensuring optimal performance.
 
@@ -230,7 +230,7 @@ In Angular, route preloading strategies are used to improve the performance of l
 
 - `NoPreloading` is the default loading strategy for lazy modules in Angular. With this strategy modules are lazy-loaded on-demand by the router on navigation events.
 - `PreloadAllModules` strategy preloads all lazy-loaded modules. This strategy is useful for small applications with fewer modules. However, it can increase network usage and client-side computation, leading to a slower user experience for larger applications.
-- `QuicklinkStrategy` strategy preloads only the routes associated with the links on the current page. It uses the `IntersectionObserver` API to achieve this, which can significantly reduce network usage and client-side computation. The `ngx-quicklink` package provides this strategy. This strategy is more suitable for larger applications with many modules.
+- `QuicklinkStrategy` strategy preloads only the routes associated with the links on the current page. It uses the [`IntersectionObserver`](https://www.youtube.com/watch?v=aUjBvuUdkhg) API to achieve this, which can significantly reduce network usage and client-side computation. The `ngx-quicklink` package provides this strategy. This strategy is more suitable for larger applications with many modules.
 
 For more advanced scenarios, you might consider using a predictive preloading library such as [Guess.js](https://guess-js.github.io/docs/angular). These types of libraries analyze user behavior data and preload only the JavaScript chunks that are likely to be needed next, making your preloading strategy even more network efficient.
 
@@ -307,7 +307,7 @@ export class AppRoutingModule {}
 
 Even though we've optimized our application for efficiency, a keen-eyed user might still observe a slight delay during navigation. This can result in a brief moment where data tables might appear empty or a loading spinner is displayed, even though the data is already cached.
 
-This quick delay occurs when Angular recreates a component, notably, this tends to happen when transitioning between routes that utilize different component classes.To help us with this behaviour, the framework provides us with the route reuse strategy.
+This quick delay occurs when Angular recreates a component, notably, this tends to happen when transitioning between routes that utilize different component classes. To help us with this behaviour, the framework provides us with the route reuse strategy.
 
 A route reuse strategy refers to the set of rules that the router uses to determine whether to reuse or recreate components when navigating between routes. The router reuse strategy is an integral part of how the router manages the state of the application during navigation.
 
@@ -356,7 +356,7 @@ const routes: Routes = [
 
 # Custom route matchers
 
-In Angular custom route matchers provide a way to define your own routing rules,beyond the standard provided ones. This feature is useful when you need to match URLs based on complex patterns that cannot be expressed using the standard path and pathMatch properties in the route configuration.
+In Angular custom route matchers provide a way to define your own routing rules, beyond the standard provided ones. This feature is useful when you need to match URLs based on complex patterns that cannot be expressed using the standard path and pathMatch properties in the route configuration.
 
 ```typescript
 RouterModule.forRoot([
@@ -491,7 +491,7 @@ const routes: Routes = [
 
 (Dashboard component with multiple sections, each with its own set of child routes.)
 
-Each level of the nested route hierarchy corresponds to a <router-outlet> in the component template. The parent component's template includes a primary <router-outlet> for the main content and additional outlets for each nested level.
+Each level of the nested route hierarchy corresponds to a <router-outlet> in the component's template. The parent component's template includes a primary <router-outlet> for the main content and additional outlets for each nested level.
 
 ```html
 <!-- DashboardComponent template -->
