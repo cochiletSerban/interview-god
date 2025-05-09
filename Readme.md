@@ -6,4 +6,6 @@
 
 [3 - Advanced Angular routing](/angular/advanced-routing/advanced-routing.md)
 
-[4 - Observables: RxJs deep dive](/angular/observables/angular-observables.md)
+[4 - Angular dependency injection](/angular/dependency-injection/dependency-injection.md)
+
+[5 - Observables: RxJs deep dive](/angular/observables/angular-observables.md)
