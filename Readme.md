@@ -9,3 +9,5 @@
 [4 - Angular dependency injection](/angular/dependency-injection/dependency-injection.md)
 
 [5 - Observables: RxJs deep dive](/angular/observables/angular-observables.md)
+
+[6 - Modern Angular](/angular/modern-angular/modern-angular.md)
